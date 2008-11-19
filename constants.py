@@ -1,7 +1,7 @@
 
 try:
     BRANCH = file("BRANCH").read().strip()
-except OSError:
+except IOError:
     BRANCH = None
 
 NSNAM_CODE_BASE_URL = "http://code.nsnam.org/"
