@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-import subprocess
 import sys
 from optparse import OptionParser
 import os
@@ -8,25 +7,15 @@ import urllib
 from util import run_command, fatal, CommandError
 
 import constants
-    
-
-def main(argv):
-    parser = OptionParser()
-    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
-                      help="Name of the NS-3 version", metavar="BRANCH_NAME")
-    (options, args) = parser.parse_args()
-
-    # first of all, change to the directory of the script
-    os.chdir(os.path.dirname(__file__))
 
 
 
-
+def get_ns3(ns3_branch):
     #
     # Get NS-3
     #
-    ns3_dir = options.ns3_branch
-    ns3_branch_url = constants.NSNAM_CODE_BASE_URL + options.ns3_branch
+    ns3_dir = ns3_branch
+    ns3_branch_url = constants.NSNAM_CODE_BASE_URL + ns3_branch
 
     if not os.path.exists(ns3_dir):
         print "Cloning ns-3 branch"
@@ -37,9 +26,12 @@ def main(argv):
 
     # For future reference (e.g. build.py script), the downloaded ns3 version becomes our version
     f = file("BRANCH", "wt")
-    f.write("%s\n" % options.ns3_branch)
+    f.write("%s\n" % ns3_branch)
     f.close()
+    return ns3_dir
 
+    
+def get_regression_traces(ns3_dir):
     #
     # Get the regression traces
     # 
@@ -62,6 +54,7 @@ def main(argv):
 
 
 
+def get_pybindgen(ns3_dir):
     #
     # Get PyBindGen
     #
@@ -116,12 +109,20 @@ __version__ = %r
     vfile.close()
 
 
+def main():
+    parser = OptionParser()
+    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
+                      help="Name of the NS-3 version", metavar="BRANCH_NAME")
+    (options, dummy_args) = parser.parse_args()
 
+    # first of all, change to the directory of the script
+    os.chdir(os.path.dirname(__file__))
 
-
-    
+    ns3_dir = get_ns3(options.ns3_branch)
+    get_regression_traces(ns3_dir)
+    get_pybindgen(ns3_dir)
 
     return 0
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv))
+    sys.exit(main())
