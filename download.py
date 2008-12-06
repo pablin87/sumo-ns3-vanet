@@ -5,25 +5,9 @@ from optparse import OptionParser
 import os
 import shutil
 import urllib
+from util import run_command, fatal, CommandError
 
 import constants
-
-def fatal(msg):
-    print >> sys.stderr, msg
-    sys.exit(2)
-
-
-def run_command(*args, **kwargs):
-    if len(args):
-        argv = args[0]
-    elif 'args' in kwargs:
-        argv = kwargs['args']
-    else:
-        argv = None
-    if argv is not None:
-        print " => ", ' '.join(argv)
-    # FIXME: check_call is python >= 2.5 only, but we need to support python 2.3 as well
-    return subprocess.check_call(*args, **kwargs)
     
 
 def main(argv):
@@ -68,12 +52,12 @@ def main(argv):
             run_command(["hg", "-q", "pull", "--cwd", regression_traces_dir_name,
                          constants.REGRESSION_TRACES_REPO + regression_traces_dir_name])
             run_command(["hg", "-q", "update", "--cwd", regression_traces_dir_name])
-    except subprocess.CalledProcessError: # this exception normally means mercurial is not found
+    except OSError: # this exception normally means mercurial is not found
         if not os.path.exists(regression_traces_dir_name):
             traceball = regression_traces_dir_name + constants.TRACEBALL_SUFFIX
             print "Retrieving " + traceball + " from web."
             urllib.urlretrieve(constants.REGRESSION_TRACES_URL + traceball, traceball)
-            os.system("tar -xjf %s" % (traceball))
+            run_command(["tar", "-xjf", traceball])
             print "Done."
 
 

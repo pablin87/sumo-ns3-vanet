@@ -5,6 +5,8 @@ def fatal(msg):
     print >> sys.stderr, msg
     sys.exit(2)
 
+class CommandError(Exception):
+    pass
 
 def run_command(*args, **kwargs):
     if len(args):
@@ -15,5 +17,8 @@ def run_command(*args, **kwargs):
         argv = None
     if argv is not None:
         print " => ", ' '.join(argv)
-    # FIXME: check_call is python >= 2.5 only, but we need to support python 2.3 as well
-    return subprocess.check_call(*args, **kwargs)
+
+    cmd = subprocess.Popen(*args, **kwargs)
+    retval = cmd.wait()
+    if retval:
+        raise CommandError("Command %r exited with code %i" % (argv, retval))
