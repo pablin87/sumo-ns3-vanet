@@ -19,6 +19,7 @@ def main(argv):
     run_command(["./waf", "configure",
                  "--with-regression-traces", os.path.join("..", constants.BRANCH + constants.REGRESSION_SUFFIX),
                  "--with-pybindgen", os.path.join("..", constants.LOCAL_PYBINDGEN_PATH),
+                 "--with-nsc", os.path.join("..", constants.LOCAL_NSC_PATH),
                  ])
     run_command(["./waf"])
 

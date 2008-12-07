@@ -16,7 +16,7 @@ def get_ns3(ns3_branch):
     # Get NS-3
     #
     """
-    ns3_dir = ns3_branch
+    ns3_dir = os.path.split(ns3_branch)[-1]
     ns3_branch_url = constants.NSNAM_CODE_BASE_URL + ns3_branch
 
     if not os.path.exists(ns3_dir):
@@ -136,11 +136,11 @@ def get_nsc(ns3_dir):
     
     def nsc_clone():
         print "Retrieving nsc from " + constants.NSC_REPO
-        run_command(['hg', 'clone', constants.NSC_REPO, "nsc"])
+        run_command(['hg', 'clone', constants.NSC_REPO, constants.LOCAL_NSC_PATH])
 
     def nsc_update():
         print "Pulling nsc updates from " + constants.NSC_REPO
-        run_command(['hg', '--cwd', 'nsc', 'pull', '-u', constants.NSC_REPO])
+        run_command(['hg', '--cwd', constants.LOCAL_NSC_PATH, 'pull', '-u', constants.NSC_REPO])
 
     def nsc_download():
         local_file = required_nsc_version + ".tar.bz2"
@@ -149,12 +149,12 @@ def get_nsc(ns3_dir):
         urllib.urlretrieve(remote_file, local_file)
         print "Uncompressing " + local_file
         run_command(["tar", "-xjf", local_file])
-        print "Rename %s as %s" % (required_nsc_version, "nsc")
-        os.rename(required_nsc_version, "nsc")
+        print "Rename %s as %s" % (required_nsc_version, constants.LOCAL_NSC_PATH)
+        os.rename(required_nsc_version, constants.LOCAL_NSC_PATH)
 
     if not os.path.exists(os.path.join(ns3_dir, '.hg')):
         nsc_download()
-    elif not os.path.exists("nsc"):
+    elif not os.path.exists(constants.LOCAL_NSC_PATH):
         nsc_clone()
     else:
         nsc_update()
@@ -162,7 +162,7 @@ def get_nsc(ns3_dir):
 
 def main():
     parser = OptionParser()
-    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
+    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="gjc/ns-3-dev",
                       help="Name of the NS-3 version", metavar="BRANCH_NAME")
     (options, dummy_args) = parser.parse_args()
 

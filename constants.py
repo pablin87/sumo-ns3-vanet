@@ -44,3 +44,4 @@ TRACEBALL_SUFFIX = ".tar.bz2"
 NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
 NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
 
+LOCAL_NSC_PATH = "nsc"
