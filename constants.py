@@ -39,3 +39,8 @@ REGRESSION_SUFFIX = "-ref-traces"
 # e.g., ns-3-dev-ref-traces.tar.bz2
 #
 TRACEBALL_SUFFIX = ".tar.bz2"
+
+# network simulation cradle
+NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
+NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
+

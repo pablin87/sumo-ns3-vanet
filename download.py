@@ -109,6 +109,46 @@ __version__ = %r
     vfile.close()
 
 
+
+def get_nsc(ns3_dir):
+    # (peek into the ns-3 wscript and extract the required nsc version)
+    internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet-stack", "wscript"), "rt")
+    required_nsc_version = None
+    for line in internet_stack_wscript:
+        if 'NSC_RELEASE_NAME' in line:
+            required_nsc_version = eval(line.split('=')[1].strip())
+            break
+    internet_stack_wscript.close()
+    if required_nsc_version is None:
+        fatal("Unable to detect NSC required version")
+    print "Required NSC version: ", required_nsc_version
+    
+    def nsc_clone():
+        print "Retrieving nsc from " + constants.NSC_REPO
+        run_command(['hg', 'clone', constants.NSC_REPO, "nsc"])
+
+    def nsc_update():
+        print "Pulling nsc updates from " + constants.NSC_REPO
+        run_command(['hg', '--cwd', 'nsc', 'pull', '-u', constants.NSC_REPO])
+
+    def nsc_download():
+        local_file = required_nsc_version + ".tar.bz2"
+        remote_file = constants.NSC_RELEASE_URL + "/" + local_file
+        print "Retrieving nsc from " + remote_file
+        urllib.urlretrieve(remote_file, local_file)
+        print "Uncompressing " + local_file
+        run_command(["tar", "-xjf", local_file])
+        print "Rename %s as %s" % (required_nsc_version, "nsc")
+        os.rename(required_nsc_version, "nsc")
+
+    if not os.path.exists(os.path.join(ns3_dir, '.hg')):
+        nsc_download()
+    elif not os.path.exists("nsc"):
+        nsc_clone()
+    else:
+        nsc_update()
+
+
 def main():
     parser = OptionParser()
     parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
@@ -121,6 +161,7 @@ def main():
     ns3_dir = get_ns3(options.ns3_branch)
     get_regression_traces(ns3_dir)
     get_pybindgen(ns3_dir)
+    get_nsc(ns3_dir)
 
     return 0
 
