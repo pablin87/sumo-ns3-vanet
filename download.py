@@ -11,9 +11,11 @@ import constants
 
 
 def get_ns3(ns3_branch):
+    print """
     #
     # Get NS-3
     #
+    """
     ns3_dir = ns3_branch
     ns3_branch_url = constants.NSNAM_CODE_BASE_URL + ns3_branch
 
@@ -32,9 +34,11 @@ def get_ns3(ns3_branch):
 
     
 def get_regression_traces(ns3_dir):
+    print """
     #
     # Get the regression traces
-    # 
+    #
+    """
     regression_traces_dir_name = ns3_dir + constants.REGRESSION_SUFFIX
     print "Synchronizing reference traces using Mercurial."
     try:
@@ -55,9 +59,11 @@ def get_regression_traces(ns3_dir):
 
 
 def get_pybindgen(ns3_dir):
+    print """
     #
     # Get PyBindGen
     #
+    """
     # (peek into the ns-3 wscript and extract the required pybindgen version)
     ns3_python_wscript = open(os.path.join(ns3_dir, "bindings", "python", "wscript"), "rt")
     required_pybindgen_version = None
@@ -111,6 +117,11 @@ __version__ = %r
 
 
 def get_nsc(ns3_dir):
+    print """
+    #
+    # Get NSC
+    #
+    """
     # (peek into the ns-3 wscript and extract the required nsc version)
     internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet-stack", "wscript"), "rt")
     required_nsc_version = None
