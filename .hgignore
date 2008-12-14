@@ -1,0 +1,5 @@
+\.pyc$
+^pybindgen/
+^nsc/
+^ns-3-.*/
+^BRANCH$
