@@ -12,7 +12,7 @@ def main(argv):
     (options, args) = parser.parse_args()
 
     # first of all, change to the directory of ns-3
-    d = os.path.join(os.path.dirname(__file__), constants.BRANCH)
+    d = os.path.join(os.path.dirname(__file__), os.path.split(constants.BRANCH)[-1])
     print "Entering directory `%s'" % d
     os.chdir(d)
 
