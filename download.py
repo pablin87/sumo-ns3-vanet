@@ -4,8 +4,9 @@ from optparse import OptionParser
 import os
 import shutil
 import urllib
-from util import run_command, fatal, CommandError
+from glob import glob
 
+from util import run_command, fatal, CommandError
 import constants
 
 
@@ -141,6 +142,9 @@ def get_nsc(ns3_dir):
     def nsc_update():
         print "Pulling nsc updates from " + constants.NSC_REPO
         run_command(['hg', '--cwd', constants.LOCAL_NSC_PATH, 'pull', '-u', constants.NSC_REPO])
+        for so in glob(os.path.join(constants.LOCAL_NSC_PATH, '*', '*.so')):
+            print "remove", so
+            os.remove(so)
 
     def nsc_download():
         local_file = required_nsc_version + ".tar.bz2"
