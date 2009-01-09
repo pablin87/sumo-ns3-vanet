@@ -166,7 +166,7 @@ def get_nsc(ns3_dir):
 
 def main():
     parser = OptionParser()
-    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="gjc/ns-3-dev",
+    parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
                       help="Name of the NS-3 version", metavar="BRANCH_NAME")
     (options, dummy_args) = parser.parse_args()
 
