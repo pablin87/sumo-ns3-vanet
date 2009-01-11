@@ -7,21 +7,54 @@ import constants
 from util import run_command, fatal
 
 
+def build_nsc():
+    # XXX: Detect gcc major version(s) available to build supported stacks
+    for kernel in ['linux-2.6.18', 'linux-2.6.26']:
+        run_command(['python', 'scons.py', kernel])
+    
+
+def build_ns3():
+    cmd = [
+        "./waf", "configure",
+        "--with-regression-traces", os.path.join("..", constants.BRANCH + constants.REGRESSION_SUFFIX),
+        "--with-pybindgen", os.path.join("..", constants.LOCAL_PYBINDGEN_PATH),
+        ]
+
+    # Build NSC if the architecture supports it
+    arch = os.uname()[4]
+    if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
+        cmd.extend(["--with-nsc", os.path.join("..", constants.LOCAL_NSC_PATH)])
+
+    run_command(cmd)
+    run_command(["./waf"])
+
+
 def main(argv):
     parser = OptionParser()
     (options, args) = parser.parse_args()
 
-    # first of all, change to the directory of ns-3
+
+    print "# Build NSC"
+    print "Entering directory `%s'" % constants.LOCAL_NSC_PATH
+    cwd = os.getcwd()
+    os.chdir(constants.LOCAL_NSC_PATH)
+    try:
+        build_nsc()
+    finally:
+        os.chdir(cwd)
+    print "Leaving directory `%s'" % constants.LOCAL_NSC_PATH
+
+
+    print "# Build NS-3"
     d = os.path.join(os.path.dirname(__file__), os.path.split(constants.BRANCH)[-1])
     print "Entering directory `%s'" % d
     os.chdir(d)
+    try:
+        build_ns3()
+    finally:
+        os.chdir(cwd)
+    print "Leaving directory `%s'" % d
 
-    run_command(["./waf", "configure",
-                 "--with-regression-traces", os.path.join("..", constants.BRANCH + constants.REGRESSION_SUFFIX),
-                 "--with-pybindgen", os.path.join("..", constants.LOCAL_PYBINDGEN_PATH),
-                 "--with-nsc", os.path.join("..", constants.LOCAL_NSC_PATH),
-                 ])
-    run_command(["./waf"])
 
     return 0
 
