@@ -174,9 +174,21 @@ def main():
     os.chdir(os.path.dirname(__file__))
 
     ns3_dir = get_ns3(options.ns3_branch)
-    get_regression_traces(ns3_dir)
-    get_pybindgen(ns3_dir)
-    get_nsc(ns3_dir)
+
+    try:
+        get_regression_traces(ns3_dir)
+    except CommandError:
+        print " *** Problem fetching regression reference traces; regression testing will not work."
+
+    try:
+        get_pybindgen(ns3_dir)
+    except CommandError:
+        print " *** Problem fetching pybindgen; python bindings will not work."
+
+    try:
+        get_nsc(ns3_dir)
+    except CommandError, IOError:
+        print " *** Problem fetching NSC; NSC will not be available."
 
     return 0
 
