@@ -13,10 +13,10 @@ def build_nsc():
         run_command(['python', 'scons.py', kernel])
     
 
-def build_ns3():
+def build_ns3(regression_dir):
     cmd = [
         "./waf", "configure",
-        "--with-regression-traces", os.path.join("..", constants.BRANCH + constants.REGRESSION_SUFFIX),
+        "--with-regression-traces", os.path.join("..", regression_dir),
         "--with-pybindgen", os.path.join("..", constants.LOCAL_PYBINDGEN_PATH),
         ]
 
@@ -46,11 +46,12 @@ def main(argv):
 
 
     print "# Build NS-3"
-    d = os.path.join(os.path.dirname(__file__), os.path.split(constants.BRANCH)[-1])
+    d = os.path.join(os.path.dirname(__file__), os.path.split(constants.NS3_BRANCH)[-1])
     print "Entering directory `%s'" % d
     os.chdir(d)
     try:
-        build_ns3()
+        regression_dir = os.path.join(os.path.dirname(__file__), os.path.split(constants.REPO_BRANCH)[-1])
+        build_ns3(regression_dir)
     finally:
         os.chdir(cwd)
     print "Leaving directory `%s'" % d

@@ -1,8 +1,13 @@
 
 try:
-    BRANCH = file("BRANCH").read().strip()
+    NS3_BRANCH = file("NS3-BRANCH").read().strip()
 except IOError:
-    BRANCH = None
+    NS3_BRANCH = None
+
+try:
+    REPO_BRANCH = file("REPO-BRANCH").read().strip()
+except IOError:
+    REPO_BRANCH = None
 
 NSNAM_CODE_BASE_URL = "http://code.nsnam.org/"
 PYBINDGEN_BRANCH = 'https://launchpad.net/pybindgen'
