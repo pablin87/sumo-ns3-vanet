@@ -131,6 +131,12 @@ def get_nsc(ns3_dir):
     # Get NSC
     #
     """
+
+    # Skip downloading NSC on OS X due to HFS+ case insensitive issues
+    if sys.platform in ['darwin']:
+        print "Architecture (%s) does not support NSC... skipping" % (sys.platform,)
+        return 
+
     # (peek into the ns-3 wscript and extract the required nsc version)
     internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet-stack", "wscript"), "rt")
     required_nsc_version = None
