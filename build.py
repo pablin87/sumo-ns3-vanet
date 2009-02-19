@@ -33,16 +33,16 @@ def main(argv):
     parser = OptionParser()
     (options, args) = parser.parse_args()
 
-
-    print "# Build NSC"
-    print "Entering directory `%s'" % constants.LOCAL_NSC_PATH
-    cwd = os.getcwd()
-    os.chdir(constants.LOCAL_NSC_PATH)
-    try:
-        build_nsc()
-    finally:
-        os.chdir(cwd)
-    print "Leaving directory `%s'" % constants.LOCAL_NSC_PATH
+    if os.path.isdir(constants.LOCAL_NSC_PATH):
+        print "# Build NSC"
+        cwd = os.getcwd()
+        os.chdir(constants.LOCAL_NSC_PATH)
+        print "Entering directory `%s'" % constants.LOCAL_NSC_PATH
+        try:
+            build_nsc()
+        finally:
+            os.chdir(cwd)
+        print "Leaving directory `%s'" % constants.LOCAL_NSC_PATH
 
 
     print "# Build NS-3"
