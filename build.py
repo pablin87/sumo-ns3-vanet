@@ -61,6 +61,8 @@ def main(argv):
         dot_config = open(".config", "rt")
     except IOError:
         print >> sys.stderr, "** ERROR: missing .config file; you probably need to run the download.py script first."
+        sys.exit(2)
+
     config = dom.parse(dot_config)
     dot_config.close()
 

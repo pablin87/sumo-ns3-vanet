@@ -132,7 +132,7 @@ def get_nsc(ns3_dir):
     # Skip downloading NSC on OS X due to HFS+ case insensitive issues
     if sys.platform in ['darwin']:
         print "Architecture (%s) does not support NSC... skipping" % (sys.platform,)
-        return 
+        raise RuntimeError
 
     # (peek into the ns-3 wscript and extract the required nsc version)
     internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet-stack", "wscript"), "rt")
@@ -222,7 +222,7 @@ def main():
     # -- download network simulation cradle --
     try:
         nsc_dir, nsc_version = get_nsc(ns3_dir)
-    except CommandError, IOError:
+    except (CommandError, IOError, RuntimeError):
         print " *** Problem fetching NSC; NSC will not be available."
     else:
         nsc_config = config.documentElement.appendChild(config.createElement("nsc"))
