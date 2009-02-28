@@ -8,6 +8,7 @@ from glob import glob
 
 from util import run_command, fatal, CommandError
 import constants
+from xml.dom import minidom as dom
 
 
 
@@ -27,10 +28,6 @@ def get_ns3(ns3_branch):
         print "Updating ns-3 branch"
         run_command(['hg', '--cwd', ns3_dir, 'pull', '-u'])
 
-    # For future reference (e.g. build.py script), the downloaded ns3 version becomes our version
-    f = file("NS3-BRANCH", "wt")
-    f.write("%s\n" % ns3_branch)
-    f.close()
     return ns3_dir
 
     
@@ -63,9 +60,8 @@ def get_regression_traces(ns3_dir, regression_branch):
             run_command(["tar", "-xjf", traceball])
             print "Done."
 
-    f = file("REPO-BRANCH", "wt")
-    f.write("%s\n" % regression_branch)
-    f.close()
+    return regression_traces_dir
+
 
 def get_pybindgen(ns3_dir):
     print """
@@ -123,6 +119,7 @@ __version__ = %r
 """ % list(required_pybindgen_version))
     vfile.close()
 
+    return (constants.LOCAL_PYBINDGEN_PATH, '.'.join([str(x) for x in required_pybindgen_version]))
 
 
 def get_nsc(ns3_dir):
@@ -177,6 +174,8 @@ def get_nsc(ns3_dir):
     else:
         nsc_update()
 
+    return (constants.LOCAL_NSC_PATH, required_nsc_version)
+
 
 def main():
     parser = OptionParser()
@@ -189,22 +188,51 @@ def main():
     # first of all, change to the directory of the script
     os.chdir(os.path.dirname(__file__))
 
+    # Create the configuration file
+    config = dom.getDOMImplementation().createDocument(None, "config", None)
+
+
+    # -- download NS-3 --
     ns3_dir = get_ns3(options.ns3_branch)
 
+    ns3_config = config.documentElement.appendChild(config.createElement("ns-3"))
+    ns3_config.setAttribute("dir", ns3_dir)
+    ns3_config.setAttribute("branch", options.ns3_branch)
+
+    # -- download regression reference traces for NS-3 --
     try:
-        get_regression_traces(ns3_dir, options.regression_branch)
+        traces_dir = get_regression_traces(ns3_dir, options.regression_branch)
     except CommandError:
         print " *** Problem fetching regression reference traces; regression testing will not work."
+    else:
+        traces_config = config.documentElement.appendChild(config.createElement("ns-3-traces"))
+        traces_config.setAttribute("dir", traces_dir)
+        traces_config.setAttribute("branch", options.regression_branch)
 
+    # -- download pybindgen --
     try:
-        get_pybindgen(ns3_dir)
+        pybindgen_dir, pybindgen_version = get_pybindgen(ns3_dir)
     except CommandError:
         print " *** Problem fetching pybindgen; python bindings will not work."
+    else:
+        pybindgen_config = config.documentElement.appendChild(config.createElement("pybindgen"))
+        pybindgen_config.setAttribute("dir", pybindgen_dir)
+        pybindgen_config.setAttribute("version", pybindgen_version)
 
+    # -- download network simulation cradle --
     try:
-        get_nsc(ns3_dir)
+        nsc_dir, nsc_version = get_nsc(ns3_dir)
     except CommandError, IOError:
         print " *** Problem fetching NSC; NSC will not be available."
+    else:
+        nsc_config = config.documentElement.appendChild(config.createElement("nsc"))
+        nsc_config.setAttribute("dir", nsc_dir)
+        nsc_config.setAttribute("version", nsc_version)
+    
+    # write the config to a file
+    dot_config = open(".config", "wt")
+    config.writexml(dot_config, addindent="    ", newl="\n")
+    dot_config.close()
 
     return 0
 
