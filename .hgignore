@@ -4,3 +4,5 @@
 ^ns-3-.*/
 ^BRANCH$
 ~$
+^ns-allinone
+^\.config$
