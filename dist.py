@@ -82,6 +82,8 @@ def main():
             return True
         if filename.endswith('.pyc') or filename.endswith('.pyo'):
             return True
+        if filename.endswith('~'):
+            return True
         return False
     print "Adding %s as %s" % (ns3_dir, os.path.join(dist_dir, new_ns3_dir))
     tar_add_tree(tar, ns3_dir, os.path.join(dist_dir, new_ns3_dir), dir_excl, file_excl)
@@ -101,6 +103,8 @@ def main():
         if filename.startswith('.'):
             return True
         if filename.endswith('.pyc') or filename.endswith('.pyo'):
+            return True
+        if filename.endswith('~'):
             return True
         return False
     print "Adding %s as %s" % (pybindgen_dir, os.path.join(dist_dir, new_pybindgen_dir))
@@ -132,10 +136,12 @@ def main():
     def dir_excl(reldirpath, dirname):
         if dirname[0] == '.':
             return True
-        # FIXME: which files or directories to exlcude for NSC?
+        # FIXME: which files or directories to exclude for NSC?
         return False
     def file_excl(reldirpath, filename):
         if filename.startswith('.'):
+            return True
+        if filename.endswith('~'):
             return True
         return False
     print "Adding %s as %s" % (nsc_dir, os.path.join(dist_dir, new_nsc_dir))
@@ -143,7 +149,7 @@ def main():
 
 
     # add the build script files
-    print "add the build script files"
+    print "Adding the build script files"
     for filename in ["build.py", "constants.py", "util.py"]:
         tar.add(filename, os.path.join(dist_dir, filename))
 
