@@ -186,7 +186,7 @@ def main():
     (options, dummy_args) = parser.parse_args()
 
     # first of all, change to the directory of the script
-    os.chdir(os.path.dirname(__file__))
+    os.chdir(os.path.abspath(os.path.dirname(__file__)))
 
     # Create the configuration file
     config = dom.getDOMImplementation().createDocument(None, "config", None)

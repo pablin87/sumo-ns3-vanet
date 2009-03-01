@@ -16,7 +16,7 @@ def build_nsc():
 
 def build_ns3(config):
     cmd = [
-        "./waf", "configure",
+        "python", "waf", "configure",
         ]
 
     try:
@@ -43,19 +43,24 @@ def build_ns3(config):
         print "Note: configuring ns-3 without NSC"
     else:
         # Build NSC if the architecture supports it
-        arch = os.uname()[4]
+        if sys.platform not in ['linux2']:
+            arch = None
+        else:
+            arch = os.uname()[4]
         if arch == 'x86_64' or arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
             cmd.extend(["--with-nsc", os.path.join("..", nsc.getAttribute("dir"))])
         else:
             print "Note: configuring ns-3 without NSC (architecture not supported)"
 
     run_command(cmd)
-    run_command(["./waf"])
+    run_command(["python", "waf"])
 
 
 def main(argv):
     parser = OptionParser()
     (options, args) = parser.parse_args()
+
+    cwd = os.getcwd()
 
     try:
         dot_config = open(".config", "rt")
@@ -66,19 +71,21 @@ def main(argv):
     config = dom.parse(dot_config)
     dot_config.close()
 
-    nsc_config_elems = config.getElementsByTagName("nsc")
-    if nsc_config_elems:
-        nsc_config, = nsc_config_elems
-        nsc_dir = nsc_config.getAttribute("dir")
-        print "# Build NSC"
-        cwd = os.getcwd()
-        os.chdir(nsc_dir)
-        print "Entering directory `%s'" % nsc_dir
-        try:
-            build_nsc()
-        finally:
-            os.chdir(cwd)
-        print "Leaving directory `%s'" % nsc_dir
+    if sys.platform in ['darwin', 'win32']:
+        print "# Skip NSC (platform not supported)"
+    else:
+        nsc_config_elems = config.getElementsByTagName("nsc")
+        if nsc_config_elems:
+            nsc_config, = nsc_config_elems
+            nsc_dir = nsc_config.getAttribute("dir")
+            print "# Build NSC"
+            os.chdir(nsc_dir)
+            print "Entering directory `%s'" % nsc_dir
+            try:
+                build_nsc()
+            finally:
+                os.chdir(cwd)
+            print "Leaving directory `%s'" % nsc_dir
 
 
     print "# Build NS-3"
