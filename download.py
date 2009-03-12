@@ -209,7 +209,7 @@ def main():
     # -- download pybindgen --
     try:
         pybindgen_dir, pybindgen_version = get_pybindgen(ns3_dir)
-    except CommandError:
+    except (CommandError, OSError):
         print " *** Problem fetching pybindgen; python bindings will not work."
     else:
         pybindgen_config = config.documentElement.appendChild(config.createElement("pybindgen"))
