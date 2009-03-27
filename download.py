@@ -69,6 +69,11 @@ def get_pybindgen(ns3_dir):
     # Get PyBindGen
     #
     """
+
+    if sys.platform in ['cygwin']:
+        print "Architecture (%s) does not support PyBindGen ... skipping" % (sys.platform,)
+        raise RuntimeError
+
     # (peek into the ns-3 wscript and extract the required pybindgen version)
     ns3_python_wscript = open(os.path.join(ns3_dir, "bindings", "python", "wscript"), "rt")
     required_pybindgen_version = None
@@ -130,7 +135,8 @@ def get_nsc(ns3_dir):
     """
 
     # Skip downloading NSC on OS X due to HFS+ case insensitive issues
-    if sys.platform in ['darwin']:
+    # Skip downloading NSC on Cygwin because of fundamental incompatibilities.
+    if sys.platform in ['darwin', 'cygwin']:
         print "Architecture (%s) does not support NSC... skipping" % (sys.platform,)
         raise RuntimeError
 
@@ -200,7 +206,7 @@ def main():
     try:
         traces_dir = get_regression_traces(ns3_dir, options.regression_branch)
     except CommandError:
-        print " *** Problem fetching regression reference traces; regression testing will not work."
+        print " *** Did not fetch regression reference traces; regression testing will not be available."
     else:
         traces_config = config.documentElement.appendChild(config.createElement("ns-3-traces"))
         traces_config.setAttribute("dir", traces_dir)
@@ -209,8 +215,8 @@ def main():
     # -- download pybindgen --
     try:
         pybindgen_dir, pybindgen_version = get_pybindgen(ns3_dir)
-    except (CommandError, OSError):
-        print " *** Problem fetching pybindgen; python bindings will not work."
+    except (CommandError, OSError, RuntimeError):
+        print " *** Did not fetch pybindgen; python bindings will not be available."
     else:
         pybindgen_config = config.documentElement.appendChild(config.createElement("pybindgen"))
         pybindgen_config.setAttribute("dir", pybindgen_dir)
@@ -220,7 +226,7 @@ def main():
     try:
         nsc_dir, nsc_version = get_nsc(ns3_dir)
     except (CommandError, IOError, RuntimeError):
-        print " *** Problem fetching NSC; NSC will not be available."
+        print " *** Did not fetch NSC; NSC will not be available."
     else:
         nsc_config = config.documentElement.appendChild(config.createElement("nsc"))
         nsc_config.setAttribute("dir", nsc_dir)
