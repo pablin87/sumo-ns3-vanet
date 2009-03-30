@@ -150,7 +150,7 @@ def main():
 
     # add the build script files
     print "Adding the build script files"
-    for filename in ["build.py", "constants.py", "util.py"]:
+    for filename in ["build.py", "constants.py", "util.py", "README"]:
         tar.add(filename, os.path.join(dist_dir, filename))
 
 
