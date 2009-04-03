@@ -58,6 +58,9 @@ def build_ns3(config):
 
 def main(argv):
     parser = OptionParser()
+    parser.add_option('--disable-nsc',
+                      help=("Don't try to build NSC"), action="store_true", default=False,
+                      dest='disable_nsc')
     (options, args) = parser.parse_args()
 
     cwd = os.getcwd()
@@ -71,7 +74,11 @@ def main(argv):
     config = dom.parse(dot_config)
     dot_config.close()
 
-    if sys.platform in ['darwin', 'win32']:
+    if options.disable_nsc:
+        print "# Skip NSC (by user request)"
+        for node in config.getElementsByTagName("nsc"):
+            config.documentElement.removeChild(node)
+    elif sys.platform in ['darwin', 'win32']:
         print "# Skip NSC (platform not supported)"
     else:
         nsc_config_elems = config.getElementsByTagName("nsc")
