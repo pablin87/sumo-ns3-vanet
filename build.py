@@ -5,7 +5,7 @@ import os
 from xml.dom import minidom as dom
 
 import constants
-from util import run_command, fatal
+from util import run_command, fatal, CommandError
 
 
 def build_nsc():
@@ -83,6 +83,9 @@ def main(argv):
             print "Entering directory `%s'" % nsc_dir
             try:
                 build_nsc()
+            except CommandError:
+                print "# Build NSC: failure (ignoring NSC)"
+                config.documentElement.removeChild(nsc_config)
             finally:
                 os.chdir(cwd)
             print "Leaving directory `%s'" % nsc_dir
