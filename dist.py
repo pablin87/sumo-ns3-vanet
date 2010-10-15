@@ -112,22 +112,6 @@ def main():
 
 
 
-    # add regression traces
-    traces_dir = config.getElementsByTagName("ns-3-traces")[0].getAttribute("dir")
-    new_traces_dir = "ns-%s-ref-traces" % ns3_version
-    new_config.getElementsByTagName("ns-3-traces")[0].setAttribute("dir", new_traces_dir)    
-    def dir_excl(reldirpath, dirname):
-        if dirname[0] == '.':
-            return True
-        return False
-    def file_excl(reldirpath, filename):
-        if filename.startswith('.'):
-            return True
-        return False
-    print "Adding %s as %s" % (traces_dir, os.path.join(dist_dir, new_traces_dir))
-    tar_add_tree(tar, traces_dir, os.path.join(dist_dir, new_traces_dir), dir_excl, file_excl)
-
-
     # add network simulation cradle
     nsc_dir = config.getElementsByTagName("nsc")[0].getAttribute("dir")
     new_nsc_dir = config.getElementsByTagName("nsc")[0].getAttribute("version")

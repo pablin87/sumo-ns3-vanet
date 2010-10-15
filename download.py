@@ -31,38 +31,6 @@ def get_ns3(ns3_branch):
     return ns3_dir
 
     
-def get_regression_traces(ns3_dir, regression_branch):
-    print """
-    #
-    # Get the regression traces
-    #
-    """
-    # ns3_dir is the directory into which we cloned the repo
-    # regression_branch is the repo in which we will find the traces.  Variations like this should work:
-    #  ns-3-dev-ref-traces
-    #  craigdo/ns-3-dev-ref-traces
-    #  craigdo/ns-3-tap-ref-traces
-    regression_traces_dir = os.path.split(regression_branch)[-1]
-    regression_branch_url = constants.REGRESSION_TRACES_REPO + regression_branch
-
-    print "Synchronizing reference traces using Mercurial."
-    try:
-        if not os.path.exists(regression_traces_dir):
-            run_command(["hg", "clone", regression_branch_url, regression_traces_dir])
-        else:
-            run_command(["hg", "-q", "pull", "--cwd", regression_traces_dir, regression_branch_url])
-            run_command(["hg", "-q", "update", "--cwd", regression_traces_dir])
-    except OSError: # this exception normally means mercurial is not found
-        if not os.path.exists(regression_traces_dir_name):
-            traceball = regression_tbranch + constants.TRACEBALL_SUFFIX
-            print "Retrieving " + traceball + " from web."
-            urllib.urlretrieve(constants.REGRESSION_TRACES_URL + traceball, traceball)
-            run_command(["tar", "-xjf", traceball])
-            print "Done."
-
-    return regression_traces_dir
-
-
 def get_pybindgen(ns3_dir):
     print """
     #
@@ -184,8 +152,6 @@ def main():
     parser = OptionParser()
     parser.add_option("-n", "--ns3-branch", dest="ns3_branch", default="ns-3-dev",
                       help="Name of the ns-3 repository", metavar="BRANCH_NAME")
-    parser.add_option("-r", "--regression-branch", dest="regression_branch", default="ns-3-dev-ref-traces",
-                      help="Name of the ns-3 regression traces repository", metavar="REGRESSION_BRANCH_NAME")
     (options, dummy_args) = parser.parse_args()
 
     # first of all, change to the directory of the script
@@ -201,16 +167,6 @@ def main():
     ns3_config = config.documentElement.appendChild(config.createElement("ns-3"))
     ns3_config.setAttribute("dir", ns3_dir)
     ns3_config.setAttribute("branch", options.ns3_branch)
-
-    # -- download regression reference traces for NS-3 --
-    try:
-        traces_dir = get_regression_traces(ns3_dir, options.regression_branch)
-    except CommandError:
-        print " *** Did not fetch regression reference traces; regression testing will not be available."
-    else:
-        traces_config = config.documentElement.appendChild(config.createElement("ns-3-traces"))
-        traces_config.setAttribute("dir", traces_dir)
-        traces_config.setAttribute("branch", options.regression_branch)
 
     # -- download pybindgen --
     try:

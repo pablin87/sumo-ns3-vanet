@@ -13,29 +13,18 @@ repository, this directory only contains a few python scripts:
   download.py:
    
      This script will take care of downloading all necessary
-     components, including pybindgen, NSC, regression testing traces,
-     along with cloning a ns-3 repository.  By default, the main
-     development ns-3 branch, ns-3-dev, will be cloned, but it can be
-     overridden via the -n command line option.  For example,
+     components, including pybindgen and NSC, along with cloning an
+     ns-3 repository.  By default, the main development ns-3 branch,
+     ns-3-dev, will be cloned, but it can be overridden via the -n
+     command line option.  For example,
      
        ./download.py -n craigdo/ns-3-tap
 
      will clone the repository http://code.nsnam.org/craigdo/ns-3-tap
      into the allinone directory.
 
-     By default, the regression traces will be cloned from the usual
-     http://code.nsnam.org/ns-3-dev-ref-traces into a directory
-     ns-3-dev-ref-traces in the allinone directory.  You can override
-     this using the -r command line option.  For example,
-
-       ./download.py -n craigdo/ns-3-tap -r craigdo/ns-3-tap-ref-traces
-
-     will clone the repository http://code.nsnam.org/craigdo/ns-3-tap
-     into the allinone directory and also clone the reference traces
-     from the http://code.nsnam.org/craigdo/ns-3-tap-ref-traces repo.
-
   build.py:
 
-     This script will be all external components that need to be
+     This script will get all external components that need to be
      built, and then will build ns-3 using the downloaded components.
 
