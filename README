@@ -23,6 +23,17 @@ repository, this directory only contains a few python scripts:
      will clone the repository http://code.nsnam.org/craigdo/ns-3-tap
      into the allinone directory.
 
+     By default, regression traces will not be downloaded.  You can
+     override this using the -r command line option.  For example,
+
+       ./download.py -n craigdo/ns-3-tap -r craigdo/ns-3-tap-ref-traces
+
+     will clone the repository http://code.nsnam.org/craigdo/ns-3-tap
+     into the allinone directory and also clone the reference traces
+     from the http://code.nsnam.org/craigdo/ns-3-tap-ref-traces repo.
+     Note that regression traces are only available for ns-3 releases
+     up to version ns-3.9.
+
   build.py:
 
      This script will get all external components that need to be

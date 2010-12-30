@@ -22,6 +22,17 @@ def build_ns3(config):
         ]
 
     try:
+        ns3_traces, = config.getElementsByTagName("ns-3-traces")
+    except ValueError:
+        # Don't print a warning message here since regression traces
+        # are no longer used.
+        pass
+    else:
+        cmd.extend([
+                "--with-regression-traces", os.path.join("..", ns3_traces.getAttribute("dir")),
+                ])
+
+    try:
         pybindgen, = config.getElementsByTagName("pybindgen")
     except ValueError:
         print "Note: configuring ns-3 without pybindgen"
