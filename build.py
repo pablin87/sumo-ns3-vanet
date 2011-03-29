@@ -9,11 +9,7 @@ from util import run_command, fatal, CommandError
 
 
 def build_nsc():
-    # XXX: Detect gcc major version(s) available to build supported stacks
-    #  - we could just issue "python scons.py" and have NSC decide what it can
-    #    build. This might be more sane?
-    kernels = ['liblinux2.6.18.so', 'liblinux2.6.26.so']
-    run_command(['python', 'scons.py'] + kernels)
+    run_command(['python', 'scons.py'])
     
 
 def build_ns3(config):
