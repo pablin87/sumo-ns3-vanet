@@ -12,10 +12,16 @@ def build_nsc():
     run_command(['python', 'scons.py'])
     
 
-def build_ns3(config):
+def build_ns3(config, build_examples, build_tests):
     cmd = [
         "python", "waf", "configure",
         ]
+
+    if not build_examples:
+        cmd.append("--disable-examples")
+
+    if build_tests:
+        cmd.append("--enable-tests")
 
     try:
         ns3_traces, = config.getElementsByTagName("ns-3-traces")
@@ -59,8 +65,14 @@ def build_ns3(config):
 def main(argv):
     parser = OptionParser()
     parser.add_option('--disable-nsc',
-                      help=("Don't try to build NSC"), action="store_true", default=False,
+                      help=("Don't try to build NSC (built by default)"), action="store_true", default=False,
                       dest='disable_nsc')
+    parser.add_option('--disable-examples',
+                      help=("Don't try to build examples (built by default)"), action="store_true", default=False,
+                      dest='disable_examples')
+    parser.add_option('--enable-tests',
+                      help=("Do try to build tests (not built by default)"), action="store_true", default=False,
+                      dest='enable_tests')
     (options, args) = parser.parse_args()
 
     cwd = os.getcwd()
@@ -98,6 +110,17 @@ def main(argv):
                 os.chdir(cwd)
             print "Leaving directory `%s'" % nsc_dir
 
+    if options.disable_examples:
+        print "# Not building examples (by user request)"
+        build_examples = False
+    else:
+        build_examples = True
+
+    if options.enable_tests:
+        print "# Building tests (by user request)"
+        build_tests = True
+    else:
+        build_tests = False
 
     print "# Build NS-3"
     ns3_config, = config.getElementsByTagName("ns-3")
@@ -105,7 +128,7 @@ def main(argv):
     print "Entering directory `%s'" % d
     os.chdir(d)
     try:
-        build_ns3(config)
+        build_ns3(config, build_examples, build_tests)
     finally:
         os.chdir(cwd)
     print "Leaving directory `%s'" % d
