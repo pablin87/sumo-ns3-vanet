@@ -17,8 +17,8 @@ def build_ns3(config, build_examples, build_tests):
         "python", "waf", "configure",
         ]
 
-    if not build_examples:
-        cmd.append("--disable-examples")
+    if build_examples:
+        cmd.append("--enable-examples")
 
     if build_tests:
         cmd.append("--enable-tests")
@@ -67,9 +67,9 @@ def main(argv):
     parser.add_option('--disable-nsc',
                       help=("Don't try to build NSC (built by default)"), action="store_true", default=False,
                       dest='disable_nsc')
-    parser.add_option('--disable-examples',
-                      help=("Don't try to build examples (built by default)"), action="store_true", default=False,
-                      dest='disable_examples')
+    parser.add_option('--enable-examples',
+                      help=("Do try to build examples (not built by default)"), action="store_true", default=False,
+                      dest='enable_examples')
     parser.add_option('--enable-tests',
                       help=("Do try to build tests (not built by default)"), action="store_true", default=False,
                       dest='enable_tests')
@@ -110,11 +110,11 @@ def main(argv):
                 os.chdir(cwd)
             print "Leaving directory `%s'" % nsc_dir
 
-    if options.disable_examples:
-        print "# Not building examples (by user request)"
-        build_examples = False
-    else:
+    if options.enable_examples:
+        print "# Building examples (by user request)"
         build_examples = True
+    else:
+        build_examples = False
 
     if options.enable_tests:
         print "# Building tests (by user request)"
