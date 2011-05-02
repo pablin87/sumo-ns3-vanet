@@ -141,7 +141,12 @@ def get_nsc(ns3_dir):
         raise RuntimeError
 
     # (peek into the ns-3 wscript and extract the required nsc version)
-    internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet", "wscript"), "rt")
+    try:
+        # For the recent versions
+        internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet", "wscript"), "rt")
+    except IOError:
+        # For the old versions (ns-3.10 and before)
+        internet_stack_wscript = open(os.path.join(ns3_dir, "src", "internet-stack", "wscript"), "rt")
     required_nsc_version = None
     for line in internet_stack_wscript:
         if 'NSC_RELEASE_NAME' in line:
