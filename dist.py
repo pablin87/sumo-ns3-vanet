@@ -78,6 +78,9 @@ def main():
             return True
         return False
     def file_excl(reldirpath, filename):
+        # Retain directories in doc/[manual|tutorial|models]/source/_static/
+        if filename == '.hidden':
+            return False
         if filename.startswith('.'):
             return True
         if filename.endswith('.pyc') or filename.endswith('.pyo'):
