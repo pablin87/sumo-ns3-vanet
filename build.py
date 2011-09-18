@@ -9,12 +9,12 @@ from util import run_command, fatal, CommandError
 
 
 def build_nsc():
-    run_command(['python', 'scons.py'])
+    run_command([sys.executable, 'scons.py'])
     
 
 def build_ns3(config, build_examples, build_tests):
     cmd = [
-        "python", "waf", "configure",
+        sys.executable, "waf", "configure",
         ]
 
     if build_examples:
@@ -59,7 +59,7 @@ def build_ns3(config, build_examples, build_tests):
             print "Note: configuring ns-3 without NSC (architecture not supported)"
 
     run_command(cmd)
-    run_command(["python", "waf"])
+    run_command([sys.executable, "waf"])
 
 
 def main(argv):
