@@ -3,6 +3,7 @@ import sys
 from optparse import OptionParser
 import os
 from xml.dom import minidom as dom
+import shlex
 
 import constants
 from util import run_command, fatal, CommandError
@@ -12,7 +13,7 @@ def build_nsc():
     run_command([sys.executable, 'scons.py'])
     
 
-def build_ns3(config, build_examples, build_tests, args):
+def build_ns3(config, build_examples, build_tests, args, build_options):
     cmd = [sys.executable, "waf", "configure"] + args
 
     if build_examples:
@@ -56,8 +57,8 @@ def build_ns3(config, build_examples, build_tests, args):
         else:
             print "Note: configuring ns-3 without NSC (architecture not supported)"
 
-    run_command(cmd)
-    run_command([sys.executable, "waf"])
+    run_command(cmd) # waf configure ...
+    run_command([sys.executable, "waf", "build"] + build_options)
 
 
 def main(argv):
@@ -71,6 +72,9 @@ def main(argv):
     parser.add_option('--enable-tests',
                       help=("Do try to build tests (not built by default)"), action="store_true", default=False,
                       dest='enable_tests')
+    parser.add_option('--build-options',
+                      help=("Add these options to ns-3's \"waf build\" command"),
+                      default=None, dest='build_options')
     (options, args) = parser.parse_args()
 
     cwd = os.getcwd()
@@ -120,13 +124,18 @@ def main(argv):
     else:
         build_tests = False
 
+    if options.build_options is None:
+        build_options = None
+    else:
+        build_options = shlex.split(options.build_options)
+
     print "# Build NS-3"
     ns3_config, = config.getElementsByTagName("ns-3")
     d = os.path.join(os.path.dirname(__file__), ns3_config.getAttribute("dir"))
     print "Entering directory `%s'" % d
     os.chdir(d)
     try:
-        build_ns3(config, build_examples, build_tests, args)
+        build_ns3(config, build_examples, build_tests, args, build_options)
     finally:
         os.chdir(cwd)
     print "Leaving directory `%s'" % d
