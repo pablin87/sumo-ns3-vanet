@@ -12,10 +12,8 @@ def build_nsc():
     run_command([sys.executable, 'scons.py'])
     
 
-def build_ns3(config, build_examples, build_tests):
-    cmd = [
-        sys.executable, "waf", "configure",
-        ]
+def build_ns3(config, build_examples, build_tests, args):
+    cmd = [sys.executable, "waf", "configure"] + args
 
     if build_examples:
         cmd.append("--enable-examples")
@@ -128,7 +126,7 @@ def main(argv):
     print "Entering directory `%s'" % d
     os.chdir(d)
     try:
-        build_ns3(config, build_examples, build_tests)
+        build_ns3(config, build_examples, build_tests, args)
     finally:
         os.chdir(cwd)
     print "Leaving directory `%s'" % d
