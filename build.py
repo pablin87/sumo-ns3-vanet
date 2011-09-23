@@ -74,7 +74,7 @@ def main(argv):
                       dest='enable_tests')
     parser.add_option('--build-options',
                       help=("Add these options to ns-3's \"waf build\" command"),
-                      default=None, dest='build_options')
+                      default='', dest='build_options')
     (options, args) = parser.parse_args()
 
     cwd = os.getcwd()
