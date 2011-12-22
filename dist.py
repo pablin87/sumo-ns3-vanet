@@ -81,6 +81,8 @@ def main():
         # Retain directories in doc/[manual|tutorial|models]/source/_static/
         if filename == '.hidden':
             return False
+        if filename == '.ns3rc':
+            return False
         if filename.startswith('.'):
             return True
         if filename.endswith('.pyc') or filename.endswith('.pyo'):
