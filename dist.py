@@ -22,7 +22,7 @@ def tar_add_tree(tar, srcdir, tgtdir, exclude_dir_cb, exclude_file_cb):
         while True:
             for i, dirname in enumerate(dirnames):
                 if os.path.islink (os.path.join(dirpath,dirname)):
-		    # Add, but do not follow, symbolic links
+                    # Add, but do not follow, symbolic links
                     srcpath = os.path.join(dirpath, dirname)
                     tgtpath = os.path.join(tgtdir, reldirpath, dirname)
                     tar.add(srcpath, tgtpath)
