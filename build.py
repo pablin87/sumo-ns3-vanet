@@ -26,8 +26,8 @@ def build_netanim(qmakepath):
     try:
 	if qmakeFound == False:
 		run_command(['qmake-qt4', '-v'])
-	qmake = 'qmake-qt4'
-	print "qmake-qt4 found"
+		qmake = 'qmake-qt4'
+		print "qmake-qt4 found"
     except:
 	print "Could not find qmake-qt4 in the default path"
 	
