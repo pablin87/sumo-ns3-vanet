@@ -15,7 +15,24 @@ def build_nsc():
 
 def build_netanim(qmakepath):
     qmake = 'qmake'
+    qmakeFound = False
+    try:
+	run_command([qmake, '-v'])
+	print "qmake found"
+	qmakeFound = True
+    except:
+	print "Could not find qmake in the default path"
+
+    try:
+	if qmakeFound == False:
+		run_command(['qmake-qt4', '-v'])
+	qmake = 'qmake-qt4'
+	print "qmake-qt4 found"
+    except:
+	print "Could not find qmake-qt4 in the default path"
+	
     if qmakepath:
+	print "Setting qmake to user provided path"
         qmake = qmakepath
     try:    
     	if sys.platform in ['darwin']:
@@ -90,7 +107,7 @@ def main(argv):
                       help=("Don't try to build NetAnim (built by default)"), action="store_true", default=False,
                       dest='disable_netanim')
     parser.add_option('--qmake-path',
-                      help=("Provide absolute path to qmake executable for NetAnim"), action="store", default='qmake',
+                      help=("Provide absolute path to qmake executable for NetAnim"), action="store",
                       dest='qmake_path')
     parser.add_option('--enable-examples',
                       help=("Do try to build examples (not built by default)"), action="store_true", default=False,
