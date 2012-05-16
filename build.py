@@ -84,7 +84,7 @@ def build_ns3(config, build_examples, build_tests, args, build_options):
 def main(argv):
     parser = OptionParser()
     parser.add_option('--disable-nsc',
-                      help=("Don't try to build NSC (built by default)"), action="store_true", default=False,
+                      help=("Don't try to build NSC (built by default on Linux)"), action="store_true", default=False,
                       dest='disable_nsc')
     parser.add_option('--disable-netanim',
                       help=("Don't try to build NetAnim (built by default)"), action="store_true", default=False,
