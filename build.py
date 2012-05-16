@@ -13,6 +13,26 @@ def build_nsc():
     run_command([sys.executable, 'scons.py'])
     
 
+def build_netanim(qmakepath):
+    qmake = 'qmake'
+    if qmakepath:
+        qmake = qmakepath
+    try:    
+    	if sys.platform in ['darwin']:
+    		run_command([qmake, '-spec', 'macx-g++', 'NetAnim.pro'])
+    	else:
+    		run_command([qmake, 'NetAnim.pro'])
+    	run_command(['make'])
+    except OSError:
+        print "Error building NetAnim. Ensure the path to qmake is correct"
+        print "Note: Some systems use qmake-qt4 instead of qmake"
+        print "Skipping NetAnim ...."
+	pass
+    except:
+        print "Error building NetAnim."
+        print "Skipping NetAnim ...."
+	pass
+
 def build_ns3(config, build_examples, build_tests, args, build_options):
     cmd = [sys.executable, "waf", "configure"] + args
 
@@ -66,6 +86,12 @@ def main(argv):
     parser.add_option('--disable-nsc',
                       help=("Don't try to build NSC (built by default)"), action="store_true", default=False,
                       dest='disable_nsc')
+    parser.add_option('--disable-netanim',
+                      help=("Don't try to build NetAnim (built by default)"), action="store_true", default=False,
+                      dest='disable_netanim')
+    parser.add_option('--qmake-path',
+                      help=("Provide absolute path to qmake executable for NetAnim"), action="store", default='qmake',
+                      dest='qmake_path')
     parser.add_option('--enable-examples',
                       help=("Do try to build examples (not built by default)"), action="store_true", default=False,
                       dest='enable_examples')
@@ -111,6 +137,30 @@ def main(argv):
             finally:
                 os.chdir(cwd)
             print "Leaving directory `%s'" % nsc_dir
+
+    if options.disable_netanim:
+        print "# Skip NetAnimC (by user request)"
+        for node in config.getElementsByTagName("netanim"):
+            config.documentElement.removeChild(node)
+    elif sys.platform in ['cygwin', 'win32']:
+        print "# Skip NetAnim (platform not supported)"
+    else:
+        netanim_config_elems = config.getElementsByTagName("netanim")
+        if netanim_config_elems:
+            netanim_config, = netanim_config_elems
+            netanim_dir = netanim_config.getAttribute("dir")
+            print "# Build NetAnim"
+            os.chdir(netanim_dir)
+            print "Entering directory `%s'" % netanim_dir
+            try:
+                try:
+                    build_netanim(options.qmake_path)
+                except CommandError:
+                    print "# Build NetAnim: failure (ignoring NetAnim)"
+                    config.documentElement.removeChild(netanim_config)
+            finally:
+                os.chdir(cwd)
+            print "Leaving directory `%s'" % netanim_dir
 
     if options.enable_examples:
         print "# Building examples (by user request)"

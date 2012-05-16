@@ -98,7 +98,6 @@ def main():
     print "Adding %s as %s" % (ns3_dir, os.path.join(dist_dir, new_ns3_dir))
     tar_add_tree(tar, ns3_dir, os.path.join(dist_dir, new_ns3_dir), dir_excl, file_excl)
 
-
     # add pybindgen
     pybindgen_dir = config.getElementsByTagName("pybindgen")[0].getAttribute("dir")
     new_pybindgen_dir = "pybindgen-%s" % config.getElementsByTagName("pybindgen")[0].getAttribute("version")
@@ -120,8 +119,6 @@ def main():
     print "Adding %s as %s" % (pybindgen_dir, os.path.join(dist_dir, new_pybindgen_dir))
     tar_add_tree(tar, pybindgen_dir, os.path.join(dist_dir, new_pybindgen_dir), dir_excl, file_excl)
 
-
-
     # add network simulation cradle
     nsc_dir = config.getElementsByTagName("nsc")[0].getAttribute("dir")
     new_nsc_dir = config.getElementsByTagName("nsc")[0].getAttribute("version")
@@ -141,6 +138,23 @@ def main():
     print "Adding %s as %s" % (nsc_dir, os.path.join(dist_dir, new_nsc_dir))
     tar_add_tree(tar, nsc_dir, os.path.join(dist_dir, new_nsc_dir), dir_excl, file_excl)
 
+    # add NetAnim
+    netanim_dir = config.getElementsByTagName("netanim")[0].getAttribute("dir");
+    new_netanim_dir = config.getElementsByTagName("netanim")[0].getAttribute("version")
+    assert new_netanim_dir.startswith("netanim")
+    new_config.getElementsByTagName("netanim")[0].setAttribute("dir", new_netanim_dir)
+    def dir_excl(reldirpath, dirname):
+        if dirname[0] == '.':
+            return True
+        return False
+    def file_excl(reldirpath, filename):
+        if filename.startswith('.'):
+            return True
+        if filename.endswith('~'):
+            return True
+        return False
+    print "Adding %s as %s" % (netanim_dir, os.path.join(dist_dir, new_netanim_dir))
+    tar_add_tree(tar, netanim_dir, os.path.join(dist_dir, new_netanim_dir), dir_excl, file_excl)
 
     # add the build script files
     print "Adding the build script files"

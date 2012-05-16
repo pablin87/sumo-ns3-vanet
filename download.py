@@ -126,6 +126,63 @@ __version__ = %r
 
     return (constants.LOCAL_PYBINDGEN_PATH, '.'.join([str(x) for x in required_pybindgen_version]))
 
+def get_netanim(ns3_dir):
+    print """
+    #
+    # Get NetAnim
+    #
+    """
+
+    if sys.platform in ['cygwin']:
+	print "Architecture (%s) does not support NetAnim... skipping" % (sys.platform)
+        raise RuntimeError
+
+    # (peek into the ns-3 wscript and extract the required netanim version)
+    try:
+        # For the recent versions
+        netanim_wscript = open(os.path.join(ns3_dir, "src", "netanim", "wscript"), "rt")
+    except:
+        print "Unable to detect NetAnim required version.Skipping download"
+        pass
+        return
+
+    required_netanim_version = None
+    for line in netanim_wscript:
+        if 'NETANIM_RELEASE_NAME' in line:
+            required_netanim_version = eval(line.split('=')[1].strip())
+            break
+    netanim_wscript.close()
+    if required_netanim_version is None:
+        fatal("Unable to detect NetAnim required version")
+    print "Required NetAnim version: ", required_netanim_version
+
+
+    def netanim_clone():
+        print "Retrieving NetAnim from " + constants.NETANIM_REPO
+        run_command(['hg', 'clone', constants.NETANIM_REPO, constants.LOCAL_NETANIM_PATH])
+
+    def netanim_update():
+        print "Pulling NetAnim updates from " + constants.NETANIM_REPO
+        run_command(['hg', '--cwd', constants.LOCAL_NETANIM_PATH, 'pull', '-u', constants.NETANIM_REPO])
+
+    def netanim_download():
+        local_file = required_netanim_version + ".tar.bz2"
+        remote_file = constants.NETANIM_RELEASE_URL + "/" + local_file
+        print "Retrieving NetAnim from " + remote_file
+        urllib.urlretrieve(remote_file, local_file)
+        print "Uncompressing " + local_file
+        run_command(["tar", "-xjf", local_file])
+        print "Rename %s as %s" % (required_netanim_version, constants.LOCAL_NETANIM_PATH)
+        os.rename(required_netanim_version, constants.LOCAL_NETANIM_PATH)
+
+    if not os.path.exists(os.path.join(ns3_dir, '.hg')):
+        netanim_download()
+    elif not os.path.exists(constants.LOCAL_NETANIM_PATH):
+        netanim_clone()
+    else:
+        netanim_update()
+
+    return (constants.LOCAL_NETANIM_PATH, required_netanim_version)
 
 def get_nsc(ns3_dir):
     print """
@@ -227,6 +284,16 @@ def main():
         pybindgen_config = config.documentElement.appendChild(config.createElement("pybindgen"))
         pybindgen_config.setAttribute("dir", pybindgen_dir)
         pybindgen_config.setAttribute("version", pybindgen_version)
+
+    # -- download NetAnim --
+    try:
+	netanim_dir, netanim_version = get_netanim(ns3_dir)
+    except (CommandError, IOError, RuntimeError):
+	print " *** Did not fetch NetAnim offline animator. Please visit http://www.nsnam.org/wiki/index.php/NetAnim ."
+    else:
+	netanim_config = config.documentElement.appendChild(config.createElement("netanim"))
+	netanim_config.setAttribute("dir", netanim_dir)
+        netanim_config.setAttribute("version", netanim_version)
 
     # -- download network simulation cradle --
     try:

@@ -40,3 +40,9 @@ NSC_REPO = "https://secure.wand.net.nz/mercurial/nsc"
 NSC_RELEASE_URL = "http://research.wand.net.nz/software/nsc"
 
 LOCAL_NSC_PATH = "nsc"
+
+# NetAnim
+NETANIM_REPO = "http://code.nsnam.org/jabraham3/netanim"
+NETANIM_RELEASE_URL = "http://www.nsnam.org/tools/netanim"
+
+LOCAL_NETANIM_PATH = "netanim"
