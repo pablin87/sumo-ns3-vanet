@@ -41,7 +41,9 @@ def build_netanim(qmakepath):
     		run_command([qmake, 'NetAnim.pro'])
     	run_command(['make'])
     except OSError:
-        print "Error building NetAnim. Ensure the path to qmake is correct"
+        print "Error building NetAnim. Ensure the path to qmake is correct."
+        print "Could not find qmake or qmake-qt4 in the default PATH."
+        print "Use ./build.py --qmake-path <Path-to-qmake>, if qmake is installed in a non-standard location"
         print "Note: Some systems use qmake-qt4 instead of qmake"
         print "Skipping NetAnim ...."
 	pass
